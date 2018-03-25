@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Shipping{% endblock %}
+
+{% block navbar_nav %}
+<li class="nav-item active">
+    <a class="nav-link" href="/flights">Flights</a>
+</li>
+{% endblock %}
+
+{% block container %}
+<div class="row mt-3">
+    <div class="col">
+        <h2>Flights Info</h2>
+        <p>Current flights information from your email</p>
+    </div>
+</div>
+<div class="row mt-2">
+    <div class="col">
+        <table class="table table-responsive">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Reservation number</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in flights %}
+                <tr>
+                    <th scope="row">{{ row['id'] }}</th>
+                    <td>
+                        {% if row['metadata'].get('properties', {}).get('reservationNumber') %}
+                            {{ row['metadata']['properties']['reservationNumber'] }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -14,6 +14,9 @@ indexer_url = os.environ.get('INDEXER_URL', 'http://indexer')
 viewer_package_tracking_url = os.environ.get(
     'VIEWER_PACKAGE_TRACKING_URL', 'http://viewer_package_tracking:3000'
 )
+viewer_microformats_url = os.environ.get(
+    'VIEWER_MICROFORMATS_URL', 'http://viewer_package_tracking:3000'
+)
 
 
 @app.route('/')
@@ -22,7 +25,7 @@ def check():
 
 
 @app.route('/shipping')
-def get_tokens():
+def get_shipping():
     resp = requests.get(
         indexer_url+'/token',
         params={'filter_type': 'SHIPPING'},
@@ -42,6 +45,17 @@ def get_tokens():
             print('Error', e, file=sys.stderr)
             pass
     return flask.render_template('shipping.html', trackers=tokens)
+
+
+@app.route('/flights')
+def get_flights():
+    resp = requests.get(
+        indexer_url+'/token',
+        params={'filter_type': 'http://schema.org/FlightReservation'},
+    )
+    resp.raise_for_status()
+    tokens = resp.json().get('tokens')
+    return flask.render_template('flights.html', flights=tokens)
 
 
 if __name__ == '__main__':
