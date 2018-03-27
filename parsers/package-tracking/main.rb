@@ -34,10 +34,14 @@ post '/parse' do
     for tracker in trackers do
         results.push({
             :token => tracker.tracking_number,
-            :type => 'SHIPPING',
+            :type => 'http://schema.org/ParcelDelivery',
             :metadata => {
-                :carrier_name => tracker.courier_name,
-                :tracking_url => get_tracking_url(tracker),
+                :provider => {
+                    :type => 'http://schema.org/provider',
+                    :name => tracker.courier_name,
+                },
+                :trackingUrl => get_tracking_url(tracker),
+                :trackingNumber => tracker.tracking_number,
             }
         })
     end

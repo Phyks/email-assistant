@@ -52,6 +52,7 @@ def get_shipping():
         except Exception as e:
             print('Error', e, file=sys.stderr)
             pass
+    tokens = addict.Dict(tokens)
     return flask.render_template('shipping.html', trackers=tokens)
 
 

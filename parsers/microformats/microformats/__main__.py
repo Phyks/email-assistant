@@ -1,6 +1,7 @@
 import json
 import os
 
+import addict
 import bottle
 import extruct
 
@@ -9,13 +10,25 @@ HOST = os.environ.get('HOST', '0.0.0.0')
 PORT = int(os.environ.get('PORT', 4001))
 DEBUG = bool(os.environ.get('DEBUG', True))
 
+TYPES_TO_TOKEN = {
+    "http://schema.org/BusReservation": (
+        lambda x: addict.Dict(x).properties.reservationNumber or None
+    ),
+    "http://schema.org/FlightReservation": (
+        lambda x: addict.Dict(x).properties.reservationNumber or None
+    ),
+    "http://schema.org/TrainReservation": (
+        lambda x: addict.Dict(x).properties.reservationNumber or None
+    ),
+}
+
 
 def get_type(item):
     type = item.get('type', None)
     token = None
 
-    if type.endswith('FlightReservation'):
-        token = item.get('properties', {}).get('reservationNumber', None)
+    if type in TYPES_TO_TOKEN:
+        token = TYPES_TO_TOKEN[type](item)
 
     return type, token
 
@@ -34,7 +47,7 @@ def parse_microformats(message):
         results.append({
             'token': token,
             'type': type,
-            'metadata': item
+            'metadata': item.get('properties', {})
         })
     return results
 
